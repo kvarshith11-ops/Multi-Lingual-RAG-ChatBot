@@ -63,5 +63,9 @@ if __name__ == "__main__":
             print("Goodbye!")
             break
 
+        # Skip empty inputs
+        if not question:
+            continue
+
         answer = rag.answer(question)
         print("\nBot:", answer, "\n")

@@ -41,16 +41,25 @@ class PDFLoader(BaseLoader):
     def _ocr_pdf(self, file_path: str) -> List[Document]:
         from pdf2image import convert_from_path
         import pytesseract
+        import platform
 
-        # 🔧 Explicit paths (installed on D:)
-        pytesseract.pytesseract.tesseract_cmd = r"D:\Tesseract\tesseract.exe"
-        poppler_path = r"D:\poppler-25.12.0\Library\bin"
-
-        pages = convert_from_path(
-            file_path,
-            dpi=300,
-            poppler_path=poppler_path
-        )
+        # 🔧 Platform-specific paths
+        if platform.system() == "Windows":
+            # Explicit paths for Windows installation
+            pytesseract.pytesseract.tesseract_cmd = r"D:\Tesseract\tesseract.exe"
+            poppler_path = r"D:\poppler-25.12.0\Library\bin"
+            pages = convert_from_path(
+                file_path,
+                dpi=300,
+                poppler_path=poppler_path
+            )
+        else:
+            # macOS/Linux: use system-installed tesseract and poppler
+            # (installed via brew install tesseract poppler)
+            pages = convert_from_path(
+                file_path,
+                dpi=300
+            )
 
         docs: List[Document] = []
 

@@ -31,19 +31,15 @@ class RAGPipeline:
         context = "\n\n".join([doc.content for doc in retrieved_docs])
 
         prompt = f"""
-You are a multilingual knowledge assistant.
+You are a multilingual knowledge assistant with STRICT grounding requirements.
 
-Your task is to answer the user's question using ONLY the information provided in the context below.
-The context may be in one or more languages.
-
-Instructions:
-1. Understand the meaning of the question, even if it is in a different language from the context.
-2. Find the most relevant information from the context.
-3. If the answer is directly stated, use it.
-4. If the answer is implied, infer it logically from the context.
-5. Do NOT use any external knowledge.
-6. If the answer cannot be found or inferred from the context, say clearly that the information is not available.
-7. Always respond in the SAME language as the user's question.
+⚠️ CRITICAL RULES:
+1. LANGUAGE: Detect the language of the user's question and respond in THE SAME LANGUAGE. Do not translate or switch languages.
+2. GROUNDING: You MUST answer using ONLY the information in the Context section below
+3. If the Context does not contain information to answer the question, you MUST respond with:
+   "I cannot answer this question as the information is not available in the provided documents."
+4. DO NOT use any knowledge outside the provided Context
+5. DO NOT make up or infer information that is not explicitly in the Context
 
 Context:
 {context}
@@ -51,7 +47,7 @@ Context:
 Question:
 {question}
 
-Provide a clear, concise, and accurate answer:
+Answer (respond in the same language as the question, or say information is not available):
 """
 
         return self.llm.generate(prompt)
